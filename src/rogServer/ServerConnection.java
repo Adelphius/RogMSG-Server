@@ -16,7 +16,7 @@ public class ServerConnection implements Runnable {
 	    }
 
 	    private void getUserStatus() throws IOException {
-	        // Iterates when user is not connected. This gets called in run().
+	       /* // Iterates when user is not connected. This gets called in run().
 	        if(!socket.isConnected()) {
 
 	            for (int i = 1; i <= TcpServer.connThreads.size(); i++) {
@@ -36,19 +36,19 @@ public class ServerConnection implements Runnable {
 	                System.out.println(tempSocket.getLocalAddress().getHostName() + " disconnected!");
 
 	            }
-	        }
+	        }*/
 
 	    }
 
 	    public void run() {
-	        try {
+	        /*try {
 	            try {
 	                Scanner input = new Scanner(socket.getInputStream());
 
-	                /*
+	                
 	                PrintWriter out = new PrintWriter(socket.getOutputStream());
 	                Not even used.... The output stream is used in object tempOut.
-	                */
+	                
 
 	                while(true){
 	                    getUserStatus();
@@ -75,7 +75,7 @@ public class ServerConnection implements Runnable {
 	        }
 	        catch (Exception msgGrp){
 	            System.out.print(msgGrp);
-	        }
+	        }*/
 	    }
 
 }
