@@ -37,7 +37,7 @@ public class DBQueries {
 		disconnectDB();
 	}
 	
-	
+	// !!!!!! Have every method return a string
 	
 	// ---- DB Queries ---- //
 	
@@ -45,7 +45,7 @@ public class DBQueries {
 	
 	public static void connectDB() {
 		try {
-			DriverManager.getConnection(DB_URL, USER, PASS);
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
