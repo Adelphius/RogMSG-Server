@@ -13,41 +13,54 @@ import java.sql.*;
  * 
  */
 
-public class DBQueries {
+public class DBQueries 
+{
 	// Set up from: https://www.tutorialspoint.com/jdbc/jdbc-sample-code.htm 
 	
 	// JDBC driver name and database URL
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://127.0.0.1/rogdb";
+	static final String DB_URL = "jdbc:mysql://127.0.0.1/rogmsg"; //Port: 3306
 	
-	// DB credentials 		-- may not be needed.
+	// DB credentials 
 	static final String USER = "root";
 	static final String PASS = "";
 	
 	// DB I/O
 	private static Connection conn = null;
 	private static Statement stmt = null;
+	private static String sql = null;
 	private static String err = null;		// eventually set any err catching to use this & return
 	
 	
 	
 	// ---- main test ---- //
-	public static void main (String args[]) throws IOException{
+	public static void main (String args[]) throws IOException 
+	{
 		connectDB();
 		disconnectDB();
+		
+		addGroup("TestGroup");
 	}
 	
+	
+	
 	// !!!!!! Have every method return a string
+	
+	
 	
 	// ---- DB Queries ---- //
 	
 	// DB connection & error
 	
-	public static void connectDB() {
-		try {
+	public static void connectDB() 
+	{
+		try 
+		{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} 
+		catch (SQLException e) 
+		{
+			// TODO have work with errLog handling 
 			e.printStackTrace();
 			System.out.println("Error: Could not connect to DB.");
 		}
@@ -58,11 +71,15 @@ public class DBQueries {
 	/*
 	 * Close the DB connection
 	 */
-	public static void disconnectDB(){
-		try {
+	public static void disconnectDB()
+	{
+		try 
+		{
 			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} 
+		catch (SQLException e) 
+		{
+			// TODO have work with errLog handling 
 			e.printStackTrace();
 		}
 		
@@ -73,12 +90,61 @@ public class DBQueries {
 	
 	private static void setDBErrLog() {}
 	
+	
+	
 	// Group Queries 
-	public static void addGroup() {}
+	public static int addGroup(String groupName) 
+	{
+		try 
+		{
+			stmt = conn.createStatement(); 
+			sql = "";		//TODO write the SQL Statement
+			int insert = stmt.executeUpdate(sql);
+			return insert;
+		} 
+		catch (SQLException e) 
+		{
+			// TODO Have work with errLog handling eventually
+			e.printStackTrace();
+			return -1;
+		}
+	}
 	
-	public static void updateGroup() {}
+	public static int updateGroup() 
+	{
+		try 
+		{
+			stmt = conn.createStatement(); 
+			sql = "";		//TODO write the SQL Statement
+			int insert = stmt.executeUpdate(sql);
+			return insert;
+		} 
+		catch (SQLException e) 
+		{
+			// TODO Have work with errLog handling eventually
+			e.printStackTrace();
+			return -1;
+		}
+	}
 	
-	public static void delGroup() {}
+	public static int delGroup() 
+	{
+		try 
+		{
+			stmt = conn.createStatement(); 
+			sql = "";		//TODO write the SQL Statement
+			int insert = stmt.executeUpdate(sql);
+			return insert;
+		} 
+		catch (SQLException e) 
+		{
+			// TODO Have work with errLog handling eventually
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	
 	
 	// User Queries
 	public static void addUser() {}
@@ -89,6 +155,8 @@ public class DBQueries {
 	
 	public static void getUsers() {} // add to documentation
 	
+	
+	
 	// List Queries
 	public static void addList() {}
 	
@@ -97,6 +165,8 @@ public class DBQueries {
 	public static void delList() {}
 	
 	public static void getLists() {} // add to documentation
+	
+	
 	
 	// Poll Queries
 	public static void addPoll() {}
