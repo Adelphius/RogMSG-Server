@@ -37,9 +37,22 @@ public class DBQueries
 	public static void main (String args[]) throws IOException 
 	{
 		connectDB();
-		disconnectDB();
 		
-		addGroup("TestGroup");
+		String groupName = "TestGroup";
+		
+		int addGpReturn = addGroup(groupName);
+		System.out.println("Added Group Return ID: " + addGpReturn);
+		
+		int id = getGroupID(groupName);
+		System.out.println("Get Group ID Test Return: " + id);
+		
+		//int upGpReturn = updateGroup();
+		//System.out.println("Updated Group Return : " + upGpReturn);
+		
+		//int delGpReturn = delGroup();
+		//System.out.println("Updated Group Return : " + delGpReturn);
+		
+		disconnectDB();
 	}
 	
 	
@@ -98,9 +111,11 @@ public class DBQueries
 		try 
 		{
 			stmt = conn.createStatement(); 
-			sql = "";		//TODO write the SQL Statement
-			int insert = stmt.executeUpdate(sql);
-			return insert;
+			sql = "INSERT INTO msggroup (name) VALUES ('" + groupName + "');";		//TODO write the SQL Statement
+			int rs = stmt.executeUpdate(sql);
+			
+			//returns groupID number
+			return getGroupID(groupName);
 		} 
 		catch (SQLException e) 
 		{
@@ -116,8 +131,8 @@ public class DBQueries
 		{
 			stmt = conn.createStatement(); 
 			sql = "";		//TODO write the SQL Statement
-			int insert = stmt.executeUpdate(sql);
-			return insert;
+			int rs = stmt.executeUpdate(sql);
+			return rs;
 		} 
 		catch (SQLException e) 
 		{
@@ -133,8 +148,35 @@ public class DBQueries
 		{
 			stmt = conn.createStatement(); 
 			sql = "";		//TODO write the SQL Statement
-			int insert = stmt.executeUpdate(sql);
-			return insert;
+			int rs = stmt.executeUpdate(sql);
+			return rs;
+		} 
+		catch (SQLException e) 
+		{
+			// TODO Have work with errLog handling eventually
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	private static int getGroupID(String groupName) 
+	{
+		try 
+		{
+			stmt = conn.createStatement(); 
+			sql = "SELECT groupID FROM msggroup WHERE name='" + groupName + "';";		//TODO write the SQL Statement
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			// Extract data from result set
+			int id = -1;
+			while(rs.next())
+			{
+				//Retrieve by column name
+				id  = rs.getInt("groupID");
+			}
+			rs.close();
+			
+			return id;
 		} 
 		catch (SQLException e) 
 		{

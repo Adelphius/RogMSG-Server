@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS `RoGMSG`.`MsgGroup` (
   `groupID` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`groupID`),
-  UNIQUE INDEX `groupID_UNIQUE` (`groupID` ASC))
+  UNIQUE INDEX `groupID_UNIQUE` (`groupID` ASC),
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC))
 ENGINE = InnoDB;
 
 
