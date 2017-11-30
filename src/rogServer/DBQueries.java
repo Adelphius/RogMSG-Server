@@ -1,16 +1,20 @@
-/**
- * 
- */
+
 package rogServer;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+
+
 /**
  * Class of database queries for talking to the RogMSG database.
  * NOTE: JDBC Driver mysql-connector-java-5.1.44 must be located in  C:\Program Files
  * 
  * @author Sarah F.
+ * 
+ * NOTE: in order to have the same message structure, we will need to copy some of the code from the desktop over
+ * 	to the server, such as the user and message classes. This will ensure that the server will create the same type of 
+ * 	serialized packets to send back to the client. 
  * 
  */
 
@@ -364,25 +368,23 @@ public class DBQueries
 		try 
 		{
 			stmt = conn.createStatement(); 
-			sql = "SELECT userID, username FROM users WHERE groupID='" + groupID + "' AND username='"+ username +
-					"'" + pass +"';";
+			sql = "SELECT userID, username FROM users WHERE groupID='" + groupID + "';";
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			// Extract data from result set
-			int id = -1;
+			ArrayList<User> user = null;
 			while(rs.next())
 			{
-				//Retrieve by column name
-				id  = rs.getInt("userID");
+				//TODO: FIX THIS
 			}
 			rs.close();
 			
-			return id;
+			return user;
 		} 
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
-			return -1;
+			return null;
 		}
 	} 
 	
@@ -422,84 +424,90 @@ public class DBQueries
 	/**
 	 * Get the name and ID of a user who shares the login credentials given
 	 */
-	public static ArrayList<User> authenticate(int groupID, String username, String pass) 
+	public static User authenticate(int groupID, String username, String pass) 
 	{
 		try 
 		{
 			stmt = conn.createStatement(); 
 			sql = "SELECT userID, username FROM users WHERE groupID='" + groupID + "' AND username='"+ username +
-					"'" + pass +"';";
+					"' AND password='" + pass +"';";
 			ResultSet rs = stmt.executeQuery(sql);
+			User user = null; // TODO: FIX THIS
 			
-			// Extract data from result set
-			int id = -1;
 			while(rs.next())
 			{
-				//Retrieve by column name
-				id  = rs.getInt("userID");
 			}
 			rs.close();
 			
-			return id;
+			return user;
 		} 
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
-			return -1;
+			return null;
 		}
 	} 
 	
 	
 	
 	// Messaging  Queries
-	public static void addMsg() 
+	/**
+	 * 
+	 * @param msg
+	 * @param image
+	 * @param audio
+	 * @return
+	 */
+	public static int addMsg(String msg, String image, String audio) 
 	{
-		
+		return -1;
 	}
 	
-	public static void updateMsg() 
+	/**
+	 * Returns any Messages that the specified userID may have.
+	 * 
+	 * @param userID The ID of the user you want messages for.
+	 * @return List of all the Msg's that were found.
+	 */
+	public static ArrayList<Message> getMsg(int userID) 
 	{
-		
-	}
-	
-	public static void delMsg() 
-	{
-		
-	}
-	
-	public static void getMsg() 
-	{
+		return null; //TODO: FIX THIS
 		
 	} 
+	
+	/**
+	 * 
+	 * 
+	 * @param msgID The ID of the message to delete. 
+	 * @return Exit status. Returns -1 if there was an error.
+	 */
+	public static int delMsg() 
+	{
+		return 0;
+		
+	}
+	
 	
 	
 	
 	// List Queries
-	public static void addList() 
-	{
-	}
+	public static void addList() {}
 	
 	public static void updateList() {}
 	
 	public static void delList() {}
 	
-	public static void getLists() 
-	{
-	} 
+	public static void getLists() {} 
 	
 	
 	
 	// Poll Queries
-	public static void addPoll() 
-	{
-	}
+	public static void addPoll() {}
 	
 	public static void updatePoll() {}
 	
 	public static void delPoll() {}
 	
-	public static void getPolls() 
-	{
-	} 
+	public static void getPolls() {} 
 	
 }
