@@ -8,14 +8,10 @@ import java.util.ArrayList;
 
 /**
  * Class of database queries for talking to the RogMSG database.
+ * <p>
  * NOTE: JDBC Driver mysql-connector-java-5.1.44 must be located in  C:\Program Files
  * 
  * @author Sarah F.
- * 
- * NOTE: in order to have the same message structure, we will need to copy some of the code from the desktop over
- * 	to the server, such as the user and message classes. This will ensure that the server will create the same type of 
- * 	serialized packets to send back to the client. 
- * 
  */
 
 public class DBQueries 
@@ -56,6 +52,8 @@ public class DBQueries
 		
 		//int delGpReturn = delGroup();
 		//System.out.println("Updated Group Return : " + delGpReturn);
+		
+		//TODO: FINISH TESTING METHODS
 		
 		disconnectDB();
 	}
@@ -172,6 +170,7 @@ public class DBQueries
 		try 
 		{
 			stmt = conn.createStatement(); 
+			
 			sql = "DELETE FROM msggroup WHERE groupID = " + groupID + ";";
 			int rs = stmt.executeUpdate(sql);
 			return rs;
@@ -230,7 +229,8 @@ public class DBQueries
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			// Extract data from result set
-			String name = "";
+			String name = null;
+			
 			while(rs.next())
 			{
 				//Retrieve by column name
@@ -259,9 +259,9 @@ public class DBQueries
 	 * @param groupName The name of the group to add the user to. 
 	 * @param username The name of the new user.
 	 * @param email The email of the user created. Will also be set as the default password for the user.
-	 * @returns the ID of the new user created.
+	 * @returns the new User object.
 	 */
-	public static int addUser(String groupName, String username, String email) 
+	public static User addUser(String groupName, String username, String email) 
 	{
 		try 
 		{
@@ -270,13 +270,14 @@ public class DBQueries
 			+ getGroupID(groupName) + "," + username + "," + email + "," + email +"');";
 			stmt.executeUpdate(sql);
 			
-			//returns groupID number
-			return getUserID(groupName, username);
+			int id = getUserID(groupName, username);
+			
+			return getUser(id, username);
 		} 
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
-			return -1;
+			return null;
 		}
 	}
 	
@@ -291,7 +292,8 @@ public class DBQueries
 		try 
 		{
 			stmt = conn.createStatement(); 
-			sql = "SELECT groupID FROM msggroup WHERE groupID = '" + getGroupID(groupName) +"' AND username='" + username + "';";
+			sql = "SELECT groupID FROM msggroup WHERE groupID = '"
+					+ getGroupID(groupName) +"' AND username='" + username + "';";
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			// Extract data from result set
@@ -361,21 +363,30 @@ public class DBQueries
 	 * Get all the users in a specific group.
 	 * 
 	 * @param groupID The ID of the group to get list of users from
-	 * @returns ArrayList of all the users in the group. List contains ID's and username's only
+	 * @returns ArrayList of all the users in the group. Returns null if no users were found. 
 	 */
+	@SuppressWarnings("null")
 	public static ArrayList<User> getUsers(int groupID) 
 	{
 		try 
 		{
 			stmt = conn.createStatement(); 
-			sql = "SELECT userID, username FROM users WHERE groupID='" + groupID + "';";
+			sql = "SELECT * FROM users WHERE groupID='" + groupID + "';";
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			// Extract data from result set
 			ArrayList<User> user = null;
+			String username = null; 
+			String email = null;
+			int userID = 0;
+			
 			while(rs.next())
 			{
-				//TODO: FIX THIS
+				userID = rs.getInt("userID");
+				username = rs.getString("username");
+				email = rs.getString("email");
+				
+				user.add(new User(username, email, userID));
 			}
 			rs.close();
 			
@@ -389,13 +400,13 @@ public class DBQueries
 	} 
 	
 	/**
-	 * Get a specific user's ID based off of their username and groupID
+	 * Get a users username and userID.
 	 * 
 	 * @param groupID ID of the group the user is in.
 	 * @param username Username of the user to find. 
 	 * @returns Specified users ID. Returns -1 if query failed.
 	 */
-	public static int getUser(int groupID, String username) 
+	public static User getUser(int groupID, String username) 
 	{
 		try 
 		{
@@ -405,10 +416,49 @@ public class DBQueries
 			
 			// Extract data from result set
 			int id = -1;
+			String name = null;
+			String email = null;
+			
 			while(rs.next())
 			{
 				//Retrieve by column name
 				id  = rs.getInt("userID");
+				name = rs.getString("username");
+				email = rs.getString("email");
+			}
+			rs.close();
+			
+			User user = new User(name, email, id);
+			
+			return user;
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	} 
+	
+	/**
+	 * Get a specified user's groupID. 
+	 * 
+	 * @param userID >0
+	 * @return >0. Users groupID, or -1 if failed. 
+	 */
+	public static int getUserGroupID(int userID)
+	{
+		try 
+		{
+			stmt = conn.createStatement(); 
+			sql = "SELECT groupID FROM users WHERE userID = '" + userID +"';";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			// Extract data from result set
+			int id = -1;
+			while(rs.next())
+			{
+				//Retrieve by column name
+				id  = rs.getInt("groupID");
 			}
 			rs.close();
 			
@@ -419,23 +469,30 @@ public class DBQueries
 			e.printStackTrace();
 			return -1;
 		}
-	} 
+	}
 	
 	/**
-	 * Get the name and ID of a user who shares the login credentials given
+	 * Get the name and ID of a user who shares the login credentials given.
+	 * 
+	 * @param email Email of the user. 
+	 * @param pass Password of the account. 
 	 */
-	public static User authenticate(int groupID, String username, String pass) 
+	public static User authentUser(String email, String pass) 
 	{
 		try 
 		{
 			stmt = conn.createStatement(); 
-			sql = "SELECT userID, username FROM users WHERE groupID='" + groupID + "' AND username='"+ username +
+			sql = "SELECT userID, username FROM users WHERE email='"+ email +
 					"' AND password='" + pass +"';";
 			ResultSet rs = stmt.executeQuery(sql);
-			User user = null; // TODO: FIX THIS
+			User user = null;
 			
 			while(rs.next())
 			{
+				int userID = rs.getInt("userID");
+				String username = rs.getString("username");
+				
+				user = new User(username, email, userID);
 			}
 			rs.close();
 			
@@ -452,38 +509,146 @@ public class DBQueries
 	
 	// Messaging  Queries
 	/**
+	 * Adding a message to the DB to be sent out to recipients.
 	 * 
-	 * @param msg
-	 * @param image
-	 * @param audio
-	 * @return
+	 * @param groupID != null.
+	 * @param msg can be null.
+	 * @param image can be null.
+	 * @param audio can be null.
+	 * @return 1 if successful, -1 if failed.
 	 */
-	public static int addMsg(String msg, String image, String audio) 
+	public static int addMsg(User recipient, String msg, String image, String audio) 
 	{
-		return -1;
+		try 
+		{
+			int recipID = recipient.getIDNo();
+			int groupID = getUserGroupID(recipID);
+			
+			stmt = conn.createStatement(); 
+			sql = "INSERT INTO messages (groupID, msg, imageLoc, audioLoc) "
+					+ "VALUES ('" + groupID + ", " + msg + ", " + image + ", " + audio + "');";
+			stmt.executeUpdate(sql);
+			
+			//get the id of the new msg created, and add it to messages_users.
+			stmt = conn.createStatement(); 
+			
+			sql = "SELECT msgID FROM messages WHERE "
+					+ "groupID='"+ groupID +"' AND msg = '" + msg + "';";
+			ResultSet rs = stmt.executeQuery(sql);
+			int msgID = 0;
+			
+			while(rs.next())
+			{
+				msgID = rs.getInt("msgID");
+			}
+			rs.close();
+			
+			stmt = conn.createStatement(); 
+			sql = "INSERT INTO messages_users (Messages_msgID, user_userID) "
+					+ "VALUES ('"+ msgID +", "+ recipID +"');";
+			stmt.executeUpdate(sql);
+			
+			return 1;
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+			return -1;
+		}
 	}
 	
 	/**
 	 * Returns any Messages that the specified userID may have.
 	 * 
 	 * @param userID The ID of the user you want messages for.
-	 * @return List of all the Msg's that were found.
+	 * @return List of all the Msg's that were found. Returns null if none were found. 
 	 */
+	@SuppressWarnings("null")
 	public static ArrayList<Message> getMsg(int userID) 
 	{
-		return null; //TODO: FIX THIS
-		
+		try 
+		{
+			stmt = conn.createStatement(); 
+			sql = "SELECT * FROM messages WHERE msgID = ("
+					+ "SELECT Messages_msgID FROM messages_users WHERE "
+					+ "user_userID='" + userID + "');";
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			// Extract data from result set
+			ArrayList<Message> msg = null;
+			String strMsg = null; 
+			String imgLoc = null;
+			String audLoc = null;
+			
+			while(rs.next())
+			{
+				strMsg = rs.getString("msg");
+				imgLoc = rs.getString("imageLoc");
+				audLoc = rs.getString("audioLoc");
+				
+				msg.add(new Message(strMsg, imgLoc, audLoc));
+			}
+			rs.close();
+			
+			return msg;
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
 	} 
 	
 	/**
+	 * Delete messages for a specific user. 
 	 * 
-	 * 
-	 * @param msgID The ID of the message to delete. 
-	 * @return Exit status. Returns -1 if there was an error.
+	 * @param userID The ID of the user to delete messages for. 
+	 * @return Exit status. 1 if successful, -1 if error.
 	 */
-	public static int delMsg() 
+	public static int delMsg(int userID) 
 	{
-		return 0;
+		// first, delete from n:m relationship messages_users table
+		
+		// then delete from messages table
+		
+		try 
+		{
+			stmt = conn.createStatement(); 
+			
+			sql = "SELECT msgID FROM messages_users WHERE userID='"+ userID +"';";
+			ResultSet rs = stmt.executeQuery(sql);
+			int msgID = 0;
+			
+			while(rs.next())
+			{
+				msgID = rs.getInt("msgID");
+			}
+			rs.close();
+			
+			stmt = conn.createStatement(); 
+			sql = "DELETE FROM messages_users WHERE user_userID ='" +userID+ "' "
+					+ "AND msgID= '" + msgID + "';";
+			stmt.executeUpdate(sql);
+			
+			stmt = conn.createStatement(); 
+			// Test if there are anymore recipients of that message. If not, then perminently delete it.
+			sql = "SELECT msgID FROM messages_users WHERE userID='"+ userID +"';";
+			rs = stmt.executeQuery(sql);
+			
+			if(!rs.next())
+			{
+				stmt = conn.createStatement(); 
+				sql = "DELETE FROM messages WHERE msgID ='" +msgID+ "';";
+				stmt.executeUpdate(sql);
+			}
+			
+			return 1;
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+			return -1;
+		}
 		
 	}
 	

@@ -18,7 +18,32 @@ public class Message implements Serializable
 	private String _imageLoc;
 	private String _audioLoc;
 
-
+	/**
+	 * constructor for message
+	 * @param strMsg the message you want to send, length is > 0 (with trim())
+	 * @param imgLoc the location of the image file, image is = "" if not image file
+	 * @param audLoc the location of the audio file, audio is = "" if not audio file, 
+	 */
+	public Message(String strMsg, String imgLoc, String audLoc) 
+	{
+		_stringMsg = strMsg;
+		_imageLoc = imgLoc;
+		_audioLoc = audLoc;
+	}
+	
+	/**
+	 * Another constructor for message but takes a single string that will be the text message
+	 * @param strMsg the message you want to send, length is > 0 (with trim())
+	 */
+	public Message(String strMsg) 
+	{
+		if (strMsg.trim().length()<=0)
+			return;
+		_stringMsg = strMsg;
+		_imageLoc = "";
+		_audioLoc = "";
+	}
+	
 	/**
 	 * gets the string in the message
 	 * @returns the string in the message
@@ -74,13 +99,5 @@ public class Message implements Serializable
 	public void setAudioLoc(String audioLoc)
 	{
 		this._audioLoc = audioLoc;
-	}
-
-	/**
-	 * 
-	 */
-	public Message()
-	{
-		// TODO Auto-generated constructor stub
 	}
 }

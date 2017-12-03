@@ -16,6 +16,23 @@ public class User implements Serializable
 	private String _name;
 	private String _email;
 	private int _idNo;
+	
+	
+	/**
+	 * Makes a basic user
+	 * @param name, name.Trim().length() > 0
+	 * @param email, email.Trim().length() > 0
+	 * @param idNo, > 0
+	 */
+	public User(String name, String email, int idNo)
+	{
+		if (name.trim().length() > 0 && email.trim().length() > 0 && idNo > 0)
+		{
+			_name = name;
+			_email = email;
+			_idNo = idNo;
+		}
+	}
 
 	/**
 	 * which returns the name of the user object
@@ -83,11 +100,4 @@ public class User implements Serializable
 		}
 	}
 
-	/**
-	 * 
-	 */
-	public User()
-	{
-		// TODO Auto-generated constructor stub
-	}
 }
