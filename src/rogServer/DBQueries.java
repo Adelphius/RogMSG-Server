@@ -543,6 +543,7 @@ public class DBQueries
 			}
 			rs.close();
 			
+			// add to n:m relationship table. 
 			stmt = conn.createStatement(); 
 			sql = "INSERT INTO messages_users (Messages_msgID, user_userID) "
 					+ "VALUES ('"+ msgID +", "+ recipID +"');";

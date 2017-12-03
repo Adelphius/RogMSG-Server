@@ -1,7 +1,6 @@
 package rogServer;
 
 import java.util.ArrayList;
-//import rogServer.DBQueries;
 
 /**
  * Library of functions to break apart the given objects and call the necessary queries to the DB. 
@@ -21,7 +20,7 @@ public class ServerLogic
 	 * @param pass != null
 	 * @return User object of the authenticated user. Returns null if failed login. 
 	 */
-	static public User Authenticate(String email, String pass) 
+	static public User authenticate(String email, String pass) 
 	{
 		if(email != null && pass != null)
 		{
@@ -44,8 +43,9 @@ public class ServerLogic
 	 * If the group does not already exist, a new group will be made. 
 	 * @returns User object of new user, null if failed.
 	 */
-	static public User NewUser(String username, String email, String groupName) 
+	static public User newUser(String username, String email, String groupName) 
 	{
+		//TODO: if the group does not exist, make a new one. 
 		if(username!=null && email!=null && groupName!=null)
 		{
 			User newUser = DBQueries.addUser(groupName, username, email);
@@ -59,17 +59,28 @@ public class ServerLogic
 	/**
 	 * Breaks down the Message into it's components and adds it to the Database.
 	 * 
-	 * @param sender != null. User the message is coming from. 
-	 * @param msg Can be null. The Message object to add to the database.
-	 * @param recipients != null. The list of users to send the Message to.
+	 * @param sender != null.
+	 * @param msg != null. 
+	 * @param recipients !isEmpty. 
 	 * @returns 1 if success, -1 if failed.
 	 */
-	static public int NewMsg(User sender, Message msg, ArrayList<User> recipients) 
+	static public int newMsg(User sender, Message msg, ArrayList<User> recipients) 
 	{
-		if(msg!=null && recipients!=null)
+		if(sender!=null && !recipients.isEmpty() && msg!=null)
 		{
-			//TODO: implement this
-			return -1;
+			int i = 0;
+			int r = -1;
+			
+			while(i < recipients.size())
+			{
+				String text = msg.getStringMsg();
+				String image = msg.getImageLoc();
+				String audio = msg.getAudioLoc();
+				
+				r = DBQueries.addMsg(recipients.get(i), text, image, audio);
+				i++;
+			}
+			return r;
 		}
 		else
 			return -1;
@@ -81,15 +92,20 @@ public class ServerLogic
 	 * Once the messages have been found, they are then deleted from the DB 
 	 * before being returned. 
 	 * 
-	 * @param user The user to find all the Messages for.
-	 * @return an array of all the pending Messages for the user. Returns null if no Messages were found.
+	 * @param user !=null
+	 * @returns Array of all the pending Messages for the user. Returns null if no Messages were found.
 	 */
-	static public ArrayList<Message> GetMsgs(User user) 
+	static public ArrayList<Message> getMsgs(User user) 
 	{
 		if(user!=null)
 		{
-			//TODO: implement this
-			return null;
+			//retrieve msgs
+			ArrayList<Message> pending = DBQueries.getMsg(user.getIDNo());
+			
+			// delete msgs
+			DBQueries.delMsg(user.getIDNo());
+			
+			return pending;
 		}
 		else
 			return null;
