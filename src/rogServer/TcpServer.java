@@ -18,50 +18,27 @@ public class TcpServer {
     // Array of online users
     public static ArrayList<String> onlineUsers =new ArrayList<String>();
 
-    final int listenPort = 1023; //listen for initial connections on this port
 
     public static void main (String args[]) throws IOException{
-
-        
+    	
+    	LoginListener ll = new LoginListener(1023);
+    	Thread listenerThread = new Thread(ll);
+    	listenerThread.start();
     	
     	
+    }
+    
+    public static void AddUser(User user, int port)
+    {
     	
-    	//original code commented out while i move code into my implementation.
-    	/*try{
-            final int port = 1023; // pick a port. Any port the client/server use.
-            // instantiate a server object
-            ServerSocket server = new ServerSocket(port);
-            System.out.println("Waiting for client connection..");
-
-            // iterater for the connThreads
-            while(true){
-                Socket socket = server.accept();
-                connThreads.add(socket);
-
-                 // Check user ip and hostname
-                System.out.println("Client connected from:"+socket.getLocalAddress().getHostName());
-
-                AddUserName(socket);
-
-                // The chat return socket. This will return to all users. A Second thread
-                // will be required for one on one chat.
-
-                ServerConnection groupMsg = new ServerConnection(socket);
-                //Takes input from the the current socket and sends to all the clients continuously
-                Thread msgGrp = new Thread(groupMsg);
-                msgGrp.start();
-
-            }
-        }
-        catch(Exception msgGrp){
-            System.out.println(msgGrp);
-        }*/
     }
     
     //will be added to a thread once all connection is working properly
     public void loginListener()
     {
-    	try {
+    	
+    	//moved to its own class keeping here in comment for now
+    	/*try {
 			ServerSocket loginListener = new ServerSocket(listenPort);
 			Socket socket = loginListener.accept();
 			
@@ -96,7 +73,7 @@ public class TcpServer {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
     }
     
     
