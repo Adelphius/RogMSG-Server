@@ -2,6 +2,9 @@ package rogServer;
 
 import java.util.ArrayList;
 
+import rogShared.Message;
+import rogShared.User;
+
 /**
  * Library of functions to break apart the given objects and call the necessary queries to the DB. 
  * 

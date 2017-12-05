@@ -1,5 +1,7 @@
 package rogServer;
 
+import rogShared.User;
+
 public class UserListener implements Runnable {
 	
 	private User _connectedUser;

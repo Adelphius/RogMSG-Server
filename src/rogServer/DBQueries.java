@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
+import rogShared.Message;
+import rogShared.User;
+
 
 /**
  * Class of database queries for talking to the RogMSG database.

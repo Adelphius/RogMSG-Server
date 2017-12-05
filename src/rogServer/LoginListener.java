@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import rogShared.User;
+
 public class LoginListener implements Runnable {
 	
 	private int _listenPort;
@@ -47,12 +49,12 @@ public class LoginListener implements Runnable {
 		        
 		        System.out.println("Authenticating.");
 		        User toAuth = ServerLogic.authenticate(email, password);
-		        System.out.println("Authenticated.");
+		        
 		        PrintWriter responce = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 		        
 		        if(toAuth!=null) 
 		        {
-		        	
+			        System.out.println("Authenticated.");
 		        	responce.println("authenticated");
 		        	int newPort = 1024; //only 1024 for now will make it dynamic soon
 		        	responce.println(newPort);
@@ -68,6 +70,7 @@ public class LoginListener implements Runnable {
 		        	
 		        }else {
 		        	responce.println("invalid");
+		        	System.out.println("invalid");
 		        }
 	        
 	        }else if(authType.equals("register"))
