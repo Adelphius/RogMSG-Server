@@ -92,7 +92,6 @@ CREATE TABLE IF NOT EXISTS `RoGMSG`.`Messages` (
   `audioLoc` VARCHAR(45) NULL,
   PRIMARY KEY (`msgID`),
   UNIQUE INDEX `msgID_UNIQUE` (`msgID` ASC),
-  UNIQUE INDEX `groupID_UNIQUE` (`groupID` ASC),
   CONSTRAINT `msg_groupID`
     FOREIGN KEY (`groupID`)
     REFERENCES `RoGMSG`.`MsgGroup` (`groupID`)

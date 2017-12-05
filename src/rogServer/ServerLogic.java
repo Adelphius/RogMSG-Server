@@ -1,7 +1,6 @@
 package rogServer;
 
 import java.util.ArrayList;
-//import rogServer.DBQueries;
 
 /**
  * Library of functions to break apart the given objects and call the necessary queries to the DB. 
@@ -11,6 +10,31 @@ import java.util.ArrayList;
  */
 public class ServerLogic 
 {	
+	/* Debugging main
+	public static void main (String args[]) throws IOException 
+	{
+		User auth = authenticate("saf04231@gmail.com","safo4231@gmail.com");
+		
+		if(auth != null)
+			System.out.println("User Logged In.");
+		
+		User sender = authenticate("txj@gmail.com", "txj@gmail.com");
+		
+		ArrayList<User> recip = new ArrayList<User>();
+		recip.add(auth);
+		
+		Message msg = new Message("Testing", "", "");
+		
+		newMsg(sender, msg, recip);
+		
+		ArrayList<Message> msgs = new ArrayList<Message>();
+		msgs = getMsgs(auth);
+		
+		System.out.println(msgs.get(1).getStringMsg());
+		
+	}
+	*/
+	
 	
 	/**
 	 * Authentication process to have a user log into their client application. 
@@ -21,16 +45,22 @@ public class ServerLogic
 	 * @param pass != null
 	 * @return User object of the authenticated user. Returns null if failed login. 
 	 */
-	static public User Authenticate(String email, String pass) 
+	static public User authenticate(String email, String pass) 
 	{
+		DBQueries.connectDB();
+		
 		if(email != null && pass != null)
 		{
 			User user = DBQueries.authentUser(email, pass);
-			
+			DBQueries.disconnectDB();
 			return user;
 		}
 		else
+		{
+			DBQueries.disconnectDB();
 			return null;
+		}
+			
 	}
 	
 	/**
@@ -44,35 +74,66 @@ public class ServerLogic
 	 * If the group does not already exist, a new group will be made. 
 	 * @returns User object of new user, null if failed.
 	 */
-	static public User NewUser(String username, String email, String groupName) 
+	static public User newUser(String username, String email, String groupName) 
 	{
+		DBQueries.connectDB();
+		
 		if(username!=null && email!=null && groupName!=null)
 		{
-			User newUser = DBQueries.addUser(groupName, username, email);
+			if(DBQueries.getGroupID(groupName) == -1)
+				DBQueries.addGroup(groupName);
+
+			DBQueries.addUser(groupName, username, email);
+			int groupID = DBQueries.getGroupID(groupName);
+			User newUser = DBQueries.getUser(groupID, username);
+			
+			DBQueries.disconnectDB();
 			return newUser;
 		}
 		else
+		{
+			DBQueries.disconnectDB();
 			return null;
+		}
+			
 		
 	}
 	
 	/**
 	 * Breaks down the Message into it's components and adds it to the Database.
 	 * 
-	 * @param sender != null. User the message is coming from. 
-	 * @param msg Can be null. The Message object to add to the database.
-	 * @param recipients != null. The list of users to send the Message to.
+	 * @param sender != null.
+	 * @param msg != null. 
+	 * @param recipients !isEmpty. 
 	 * @returns 1 if success, -1 if failed.
 	 */
-	static public int NewMsg(User sender, Message msg, ArrayList<User> recipients) 
+	static public int newMsg(User sender, Message msg, ArrayList<User> recipients) 
 	{
-		if(msg!=null && recipients!=null)
+		DBQueries.connectDB();
+		
+		if(sender!=null && !recipients.isEmpty() && msg!=null)
 		{
-			//TODO: implement this
-			return -1;
+			int i = 0;
+			int r = -1;
+			
+			while(i < recipients.size())
+			{
+				String text = msg.getStringMsg();
+				String image = msg.getImageLoc();
+				String audio = msg.getAudioLoc();
+				
+				r = DBQueries.addMsg(recipients.get(i), text, image, audio);
+				i++;
+			}
+			DBQueries.disconnectDB();
+			return r;
 		}
 		else
+		{
+			DBQueries.disconnectDB();
 			return -1;
+		}
+			
 	}
 	
 	/**
@@ -81,18 +142,30 @@ public class ServerLogic
 	 * Once the messages have been found, they are then deleted from the DB 
 	 * before being returned. 
 	 * 
-	 * @param user The user to find all the Messages for.
-	 * @return an array of all the pending Messages for the user. Returns null if no Messages were found.
+	 * @param user !=null
+	 * @returns Array of all the pending Messages for the user. Returns null if no Messages were found.
 	 */
-	static public ArrayList<Message> GetMsgs(User user) 
+	static public ArrayList<Message> getMsgs(User user) 
 	{
+		DBQueries.connectDB();
+		
 		if(user!=null)
 		{
-			//TODO: implement this
-			return null;
+			//retrieve msgs
+			ArrayList<Message> pending = DBQueries.getMsg(user.getIDNo());
+			
+			// delete msgs
+			DBQueries.delMsg(user.getIDNo());
+			
+			DBQueries.disconnectDB();
+			return pending;
 		}
 		else
+		{
+			DBQueries.disconnectDB();
 			return null;
+		}
+		
 	}
 	
 }
