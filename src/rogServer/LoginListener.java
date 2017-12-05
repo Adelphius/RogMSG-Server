@@ -29,32 +29,33 @@ public class LoginListener implements Runnable {
 			
 	        BufferedReader input =
 	            new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	        String username = input.readLine();
+	        String email = input.readLine();
 	        String password = input.readLine();
 	        
-	        //put stuff here to check if the user is valid. if so, send the user object for that user. (need serverlogic.
 	        
-	        if(username.equals("test")&&password.equals("pass")) //in future check if user exists and password is valid for user.
+	        
+	        User toAuth = ServerLogic.Authenticate(email, password);
+	        
+	        PrintWriter responce = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+	        
+	        if(toAuth!=null) 
 	        {
-	        	PrintWriter responce = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
-	        	responce.println("authenticated");
-	        	int newPort = 1024;
-	        	responce.println(newPort);
 	        	
-	        	User testUser = new User();
-	        	testUser.setEmail("testemail@email.com");
-	        	testUser.setIDNo(1);
-	        	testUser.setName("test name");
+	        	responce.println("authenticated");
+	        	int newPort = 1024; //only 1024 for now will make it dynamic soon
+	        	responce.println(newPort);
+	        	responce.flush();
 	        	
 	        	ObjectOutputStream outToClient = new ObjectOutputStream(socket.getOutputStream());
 	        	
-	        	outToClient.writeObject(testUser); 
+	        	outToClient.writeObject(toAuth); 
 	        	
+	        	UserListener ul = new UserListener(toAuth, newPort);
 	        	
-	        	TcpServer.AddUser(testUser, newPort);
+	        	TcpServer.AddUser(ul);
 	        	
 	        }else {
-	        	
+	        	responce.println("invalid");
 	        }
 	        
 			

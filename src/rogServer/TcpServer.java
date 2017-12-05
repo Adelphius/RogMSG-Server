@@ -14,7 +14,8 @@ import java.util.Scanner;
 public class TcpServer {
 
 	// Array of all connection sockets
-    public static ArrayList<Socket> connThreads =new ArrayList<Socket>();
+    //public static ArrayList<UserListener> connThreads =new ArrayList<UserListener>();
+	public static ArrayList<Thread> connThreads =new ArrayList<Thread>();
     // Array of online users
     public static ArrayList<String> onlineUsers =new ArrayList<String>();
 
@@ -28,56 +29,18 @@ public class TcpServer {
     	
     }
     
-    public static void AddUser(User user, int port)
+    public static void AddUser(UserListener newUser)
     {
+    	Thread userThread = new Thread(newUser);
+    	userThread.start();
+    	connThreads.add(userThread); //not sure about this stuff. needs testing
+    	
     	
     }
     
-    //will be added to a thread once all connection is working properly
-    public void loginListener()
-    {
-    	
-    	//moved to its own class keeping here in comment for now
-    	/*try {
-			ServerSocket loginListener = new ServerSocket(listenPort);
-			Socket socket = loginListener.accept();
-			
-	        BufferedReader input =
-	            new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	        String username = input.readLine();
-	        String password = input.readLine();
-	        
-	        //put stuff here to check if the user is valid. if so, send the user object for that user. (need serverlogic.
-	        
-	        if(username.equals("test")&&password.equals("pass")) //in future check if user exists and password is valid for user.
-	        {
-	        	PrintWriter responce = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
-	        	responce.println("authenticated");
-	        	
-	        	User testUser = new User();
-	        	testUser.setEmail("testemail@email.com");
-	        	testUser.setIDNo(1);
-	        	testUser.setName("test name");
-	        	
-	        	ObjectOutputStream outToClient = new ObjectOutputStream(socket.getOutputStream());
-	        	
-	        	outToClient.writeObject(testUser); 
-	        	
-	        	
-	        	
-	        }else {
-	        	
-	        }
-	        
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-    }
     
     
-        public static void AddUserName(Socket msgGrp) throws IOException     {
+        /*public static void AddUserName(Socket msgGrp) throws IOException     {
             Scanner input = new Scanner(msgGrp.getInputStream());
             String Username = input.nextLine();
             onlineUsers.add(Username);
@@ -89,6 +52,6 @@ public class TcpServer {
             out.println("?#!" + onlineUsers);
             out.flush();
         }
-    }
+    }*/
 	
 }
