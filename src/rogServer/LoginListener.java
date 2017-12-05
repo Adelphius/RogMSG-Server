@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 import rogShared.User;
 
@@ -65,9 +64,6 @@ public class LoginListener implements Runnable {
 			        	ObjectOutputStream outToClient = new ObjectOutputStream(socket.getOutputStream());
 			        	
 			        	outToClient.writeObject(toAuth); 
-			        	
-			        	//ArrayList<User> users = ServerLogic.getUsers(toAuth);
-			        	//outToClient.writeObject(users);
 			        	
 			        	UserListener ul = new UserListener(toAuth, newPort);
 			        	
