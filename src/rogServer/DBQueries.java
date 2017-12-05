@@ -35,7 +35,7 @@ public class DBQueries
 	
 	
 	// ---- main test ---- //
-	public static void main (String args[]) throws IOException 
+/*	public static void main (String args[]) throws IOException 
 	{
 		connectDB();
 		
@@ -56,7 +56,7 @@ public class DBQueries
 		//TODO: FINISH TESTING METHODS
 		
 		disconnectDB();
-	}
+	}*/
 	
 	
 	
