@@ -66,8 +66,8 @@ public class LoginListener implements Runnable {
 			        	
 			        	outToClient.writeObject(toAuth); 
 			        	
-			        	ArrayList<User> users = ServerLogic.getUsers(toAuth);
-			        	outToClient.writeObject(users);
+			        	//ArrayList<User> users = ServerLogic.getUsers(toAuth);
+			        	//outToClient.writeObject(users);
 			        	
 			        	UserListener ul = new UserListener(toAuth, newPort);
 			        	
