@@ -10,7 +10,32 @@ import java.util.ArrayList;
  */
 public class ServerLogic 
 {	
-	//TODO: each of these should call connect() and disconnect() from DBQueries 
+	/* Debugging main
+	public static void main (String args[]) throws IOException 
+	{
+		User auth = authenticate("saf04231@gmail.com","safo4231@gmail.com");
+		
+		if(auth != null)
+			System.out.println("User Logged In.");
+		
+		User sender = authenticate("txj@gmail.com", "txj@gmail.com");
+		
+		ArrayList<User> recip = new ArrayList<User>();
+		recip.add(auth);
+		
+		Message msg = new Message("Testing", "", "");
+		
+		newMsg(sender, msg, recip);
+		
+		ArrayList<Message> msgs = new ArrayList<Message>();
+		msgs = getMsgs(auth);
+		
+		System.out.println(msgs.get(1).getStringMsg());
+		
+	}
+	*/
+	
+	
 	/**
 	 * Authentication process to have a user log into their client application. 
 	 * <p>
@@ -22,14 +47,20 @@ public class ServerLogic
 	 */
 	static public User authenticate(String email, String pass) 
 	{
+		DBQueries.connectDB();
+		
 		if(email != null && pass != null)
 		{
 			User user = DBQueries.authentUser(email, pass);
-			
+			DBQueries.disconnectDB();
 			return user;
 		}
 		else
+		{
+			DBQueries.disconnectDB();
 			return null;
+		}
+			
 	}
 	
 	/**
@@ -45,14 +76,26 @@ public class ServerLogic
 	 */
 	static public User newUser(String username, String email, String groupName) 
 	{
-		//TODO: if the group does not exist, make a new one. 
+		DBQueries.connectDB();
+		
 		if(username!=null && email!=null && groupName!=null)
 		{
-			User newUser = DBQueries.addUser(groupName, username, email);
+			if(DBQueries.getGroupID(groupName) == -1)
+				DBQueries.addGroup(groupName);
+
+			DBQueries.addUser(groupName, username, email);
+			int groupID = DBQueries.getGroupID(groupName);
+			User newUser = DBQueries.getUser(groupID, username);
+			
+			DBQueries.disconnectDB();
 			return newUser;
 		}
 		else
+		{
+			DBQueries.disconnectDB();
 			return null;
+		}
+			
 		
 	}
 	
@@ -66,6 +109,8 @@ public class ServerLogic
 	 */
 	static public int newMsg(User sender, Message msg, ArrayList<User> recipients) 
 	{
+		DBQueries.connectDB();
+		
 		if(sender!=null && !recipients.isEmpty() && msg!=null)
 		{
 			int i = 0;
@@ -80,10 +125,15 @@ public class ServerLogic
 				r = DBQueries.addMsg(recipients.get(i), text, image, audio);
 				i++;
 			}
+			DBQueries.disconnectDB();
 			return r;
 		}
 		else
+		{
+			DBQueries.disconnectDB();
 			return -1;
+		}
+			
 	}
 	
 	/**
@@ -97,6 +147,8 @@ public class ServerLogic
 	 */
 	static public ArrayList<Message> getMsgs(User user) 
 	{
+		DBQueries.connectDB();
+		
 		if(user!=null)
 		{
 			//retrieve msgs
@@ -105,10 +157,15 @@ public class ServerLogic
 			// delete msgs
 			DBQueries.delMsg(user.getIDNo());
 			
+			DBQueries.disconnectDB();
 			return pending;
 		}
 		else
+		{
+			DBQueries.disconnectDB();
 			return null;
+		}
+		
 	}
 	
 }

@@ -1,6 +1,7 @@
 
 package rogServer;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -37,7 +38,7 @@ public class DBQueries
 	public static void main (String args[]) throws IOException 
 	{
 		connectDB();
-		test();
+		getUser(2, "Ty");
 		disconnectDB();
 	}
 	*/
@@ -169,9 +170,9 @@ public class DBQueries
 	 * Get the ID of the group. 
 	 * 
 	 * @param groupName Name of the group to get the ID of. Group names are unique, so there will be no duplicates.
-	 * @return the ID of the group.
+	 * @return the ID of the group. Returns -1 if no group has that name.
 	 */
-	private static int getGroupID(String groupName) 
+	public static int getGroupID(String groupName) 
 	{
 		try 
 		{
@@ -242,9 +243,9 @@ public class DBQueries
 	 * @param groupName The name of the group to add the user to. 
 	 * @param username The name of the new user.
 	 * @param email The email of the user created. Will also be set as the default password for the user.
-	 * @returns the new User object.
+	 * @returns id of the user. -1 if failed.
 	 */
-	public static User addUser(String groupName, String username, String email) 
+	public static int addUser(String groupName, String username, String email) 
 	{
 		try 
 		{
@@ -252,15 +253,17 @@ public class DBQueries
 			sql = "INSERT INTO users (groupID, username, email, password)VALUES ('" 
 			+ getGroupID(groupName) + "', '" + username + "', '" + email + "', '" + email +"');"; 
 			stmt.executeUpdate(sql);  
+			stmt.close();
 			
 			int id = getUserID(groupName, username);
-			
-			return getUser(id, username);
+			//System.out.println(id);
+			//return getUser(id, username);
+			return id;
 		} 
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
-			return null;
+			return -1;
 		}
 	}
 	
@@ -392,6 +395,8 @@ public class DBQueries
 	{
 		try 
 		{
+			System.out.println(groupID + " " + username);
+			
 			stmt = conn.createStatement(); 
 			sql = "SELECT * FROM users WHERE groupID='" + groupID + "' AND username='"+ username +"';";
 			ResultSet rs = stmt.executeQuery(sql);
@@ -400,6 +405,7 @@ public class DBQueries
 			int id = -1;
 			String name = null;
 			String email = null;
+			rs.beforeFirst();
 			
 			while(rs.next())
 			{
@@ -409,7 +415,7 @@ public class DBQueries
 				email = rs.getString("email");
 			}
 			rs.close();
-			
+			System.out.println(id + " " + name + " " + email);
 			User user = new User(name, email, id);
 			
 			return user;
@@ -469,6 +475,7 @@ public class DBQueries
 					"' AND password='" + pass +"';";
 			ResultSet rs = stmt.executeQuery(sql);
 			User user = null;
+			rs.beforeFirst();
 			
 			while(rs.next())
 			{
@@ -476,6 +483,7 @@ public class DBQueries
 				String username = rs.getString("username");
 				
 				user = new User(username, email, userID);
+				//System.out.println(user.getName());
 			}
 			rs.close();
 			
