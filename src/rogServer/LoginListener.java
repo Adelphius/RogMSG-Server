@@ -47,7 +47,7 @@ public class LoginListener implements Runnable {
 		        
 		        System.out.println("Authenticating.");
 		        User toAuth = ServerLogic.authenticate(email, password);
-		        
+		        System.out.println("Authenticated.");
 		        PrintWriter responce = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 		        
 		        if(toAuth!=null) 
