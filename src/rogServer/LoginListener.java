@@ -46,8 +46,8 @@ public class LoginListener implements Runnable {
 		        
 		        
 		        System.out.println("Authenticating.");
-		        User toAuth = ServerLogic.Authenticate(email, password);
-		        
+		        User toAuth = ServerLogic.authenticate(email, password);
+		        System.out.println("Authenticated.");
 		        PrintWriter responce = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 		        
 		        if(toAuth!=null) 
@@ -79,7 +79,7 @@ public class LoginListener implements Runnable {
 		        System.out.println("Waiting for password.");
 		        String password = input.readLine();
 		        
-		        User toAuth = ServerLogic.NewUser(name, email, "nogroup");
+		        User toAuth = ServerLogic.newUser(name, email, "nogroup");
 		        
 		        PrintWriter responce = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 		        
