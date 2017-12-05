@@ -24,37 +24,81 @@ public class LoginListener implements Runnable {
 	public void run() {
 		
 		try {
+			
+			
+			System.out.println("Creating socket");
 			ServerSocket loginListener = new ServerSocket(_listenPort);
+			System.out.println("Socket Created. Waiting for connection.");
 			Socket socket = loginListener.accept();
 			
+			System.out.println("Socket connected.");
 	        BufferedReader input =
 	            new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	        String username = input.readLine();
-	        String password = input.readLine();
 	        
-	        //put stuff here to check if the user is valid. if so, send the user object for that user. (need serverlogic.
+	        String authType = input.readLine();
 	        
-	        if(username.equals("test")&&password.equals("pass")) //in future check if user exists and password is valid for user.
+	        if(authType.equals("login"))
 	        {
-	        	PrintWriter responce = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
-	        	responce.println("authenticated");
-	        	int newPort = 1024;
-	        	responce.println(newPort);
-	        	
-	        	User testUser = new User();
-	        	testUser.setEmail("testemail@email.com");
-	        	testUser.setIDNo(1);
-	        	testUser.setName("test name");
-	        	
-	        	ObjectOutputStream outToClient = new ObjectOutputStream(socket.getOutputStream());
-	        	
-	        	outToClient.writeObject(testUser); 
-	        	
-	        	
-	        	TcpServer.AddUser(testUser, newPort);
-	        	
-	        }else {
-	        	
+		        System.out.println("Waiting for email.");
+		        String email = input.readLine();
+		        System.out.println("Waiting for password.");
+		        String password = input.readLine();
+		        
+		        
+		        System.out.println("Authenticating.");
+		        User toAuth = ServerLogic.Authenticate(email, password);
+		        
+		        PrintWriter responce = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+		        
+		        if(toAuth!=null) 
+		        {
+		        	
+		        	responce.println("authenticated");
+		        	int newPort = 1024; //only 1024 for now will make it dynamic soon
+		        	responce.println(newPort);
+		        	responce.flush();
+		        	
+		        	ObjectOutputStream outToClient = new ObjectOutputStream(socket.getOutputStream());
+		        	
+		        	outToClient.writeObject(toAuth); 
+		        	
+		        	UserListener ul = new UserListener(toAuth, newPort);
+		        	
+		        	TcpServer.AddUser(ul);
+		        	
+		        }else {
+		        	responce.println("invalid");
+		        }
+	        
+	        }else if(authType.equals("register"))
+	        {
+	        	System.out.println("Waiting for email.");
+		        String email = input.readLine();
+		        System.out.println("Waiting for username.");
+		        String name = input.readLine();
+		        System.out.println("Waiting for password.");
+		        String password = input.readLine();
+		        
+		        User toAuth = ServerLogic.NewUser(name, email, "nogroup");
+		        
+		        PrintWriter responce = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+		        
+		        if(toAuth!=null)
+		        {
+		        	responce.println("authenticated");
+		        	int newPort = 1024; //only 1024 for now will make it dynamic soon
+		        	responce.println(newPort);
+		        	responce.flush();
+		        	
+		        	ObjectOutputStream outToClient = new ObjectOutputStream(socket.getOutputStream());
+		        	
+		        	outToClient.writeObject(toAuth); 
+		        	
+		        	UserListener ul = new UserListener(toAuth, newPort);
+		        	
+		        	TcpServer.AddUser(ul);
+		        	
+		        }
 	        }
 	        
 			

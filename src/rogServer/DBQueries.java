@@ -33,15 +33,15 @@ public class DBQueries
 	
 	
 	
-	// ---- main test ---- //
+
 	/*
 	public static void main (String args[]) throws IOException 
 	{
 		connectDB();
 		getUser(2, "Ty");
 		disconnectDB();
-	}
-	*/
+	}*/
+	
 	
 	
 	
