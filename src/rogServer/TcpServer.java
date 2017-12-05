@@ -13,7 +13,7 @@ public class TcpServer {
 
     public static void main (String args[]){
     	
-    	initTestDB();
+    	//initTestDB();
     	
     	LoginListener ll = new LoginListener(1023);
     	Thread listenerThread = new Thread(ll);
@@ -25,10 +25,12 @@ public class TcpServer {
     	
     }
     
+    /*
     public static void initTestDB()
     {
     	ServerLogic.newUser("test", "test@email.com", "testgroup");
     }
+    */
     
     public static void AddUser(UserListener newUser)
     {
