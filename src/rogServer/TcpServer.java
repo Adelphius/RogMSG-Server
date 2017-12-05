@@ -13,19 +13,28 @@ public class TcpServer {
 
     public static void main (String args[]){
     	
+    	initTestDB();
+    	
     	LoginListener ll = new LoginListener(1023);
     	Thread listenerThread = new Thread(ll);
     	listenerThread.start();
+    	System.out.println("started  login listener thread");
+    	
+		
     	
     	
+    }
+    
+    public static void initTestDB()
+    {
+    	ServerLogic.NewUser("test", "test@email.com", "testgroup");
     }
     
     public static void AddUser(UserListener newUser)
     {
     	Thread userThread = new Thread(newUser);
     	userThread.start();
-    	connThreads.add(userThread); //not sure about this stuff. needs testing
-    	
+    	connThreads.add(userThread); //not sure about this stuff. needs testing    	
     	
     }
     
