@@ -17,6 +17,7 @@ public class Message implements Serializable
 	private String _stringMsg;
 	private String _imageLoc;
 	private String _audioLoc;
+	private String _author;
 
 	/**
 	 * constructor for message
@@ -99,5 +100,16 @@ public class Message implements Serializable
 	public void setAudioLoc(String audioLoc)
 	{
 		this._audioLoc = audioLoc;
+	}
+	
+	public String getAuthor()
+	{
+		String auth = _author;
+		return auth;
+	}
+	
+	public void setAuthor(String str)
+	{
+		_author = str;
 	}
 }
