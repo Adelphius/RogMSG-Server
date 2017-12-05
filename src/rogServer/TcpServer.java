@@ -27,7 +27,7 @@ public class TcpServer {
     
     public static void initTestDB()
     {
-    	ServerLogic.NewUser("test", "test@email.com", "testgroup");
+    	ServerLogic.newUser("test", "test@email.com", "testgroup");
     }
     
     public static void AddUser(UserListener newUser)
