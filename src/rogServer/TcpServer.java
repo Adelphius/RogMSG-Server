@@ -1,15 +1,6 @@
 package rogServer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class TcpServer {
 
@@ -20,7 +11,7 @@ public class TcpServer {
     public static ArrayList<String> onlineUsers =new ArrayList<String>();
 
 
-    public static void main (String args[]) throws IOException{
+    public static void main (String args[]){
     	
     	LoginListener ll = new LoginListener(1023);
     	Thread listenerThread = new Thread(ll);
