@@ -171,4 +171,19 @@ public class ServerLogic
 		
 	}
 	
+	
+	public static ArrayList<User> getUsers(User user)
+	{
+		if(user != null)
+		{
+			int groupID = DBQueries.getUserGroupID(user.getIDNo());
+			
+			ArrayList<User> groupMem = new ArrayList<User>();
+			groupMem = DBQueries.getUsers(groupID);
+			return groupMem;
+		}
+		else
+			return null;
+	}
+	
 }
