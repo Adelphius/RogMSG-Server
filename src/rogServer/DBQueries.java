@@ -1,7 +1,6 @@
 
 package rogServer;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -12,8 +11,7 @@ import java.util.ArrayList;
  * NOTE: JDBC Driver mysql-connector-java-5.1.44 must be located in  C:\Program Files
  * 
  * @author Sarah F.
- */
-
+ */ 
 public class DBQueries 
 {
 	// Set up from: https://www.tutorialspoint.com/jdbc/jdbc-sample-code.htm 
@@ -35,29 +33,14 @@ public class DBQueries
 	
 	
 	// ---- main test ---- //
+	/*
 	public static void main (String args[]) throws IOException 
 	{
 		connectDB();
-		
-		String groupName = "TestGroup";
-		
-		int addGpReturn = addGroup(groupName);
-		System.out.println("Added Group Return ID: " + addGpReturn);
-		
-		int id = getGroupID(groupName);
-		System.out.println("Get Group ID Test Return: " + id);
-		
-		int upGpReturn = updateGroup(id, "NewName");
-		System.out.println("Updated Group Return : " + upGpReturn);
-		
-		//int delGpReturn = delGroup();
-		//System.out.println("Updated Group Return : " + delGpReturn);
-		
-		//TODO: FINISH TESTING METHODS
-		
+		test();
 		disconnectDB();
 	}
-	
+	*/
 	
 	
 	
@@ -83,7 +66,7 @@ public class DBQueries
 			System.out.println("Error: Could not connect to DB.");
 		}
 		
-		System.out.println("Connected to : " + DB_URL); // test statement
+		//System.out.println("Connected to : " + DB_URL); // test statement
 	}
 	
 	/**
@@ -100,7 +83,7 @@ public class DBQueries
 			e.printStackTrace();
 		}
 		
-		System.out.println("Disconnected from : " + DB_URL); // test statement
+		//System.out.println("Disconnected from : " + DB_URL); // test statement
 	}
 	
 	public static void getDBErrLog() {}
@@ -147,7 +130,7 @@ public class DBQueries
 		try 
 		{
 			stmt = conn.createStatement(); 
-			sql = "UPDATE msggroup SET name='"+ name +" WHERE groupID=" + groupID + ";";
+			sql = "UPDATE msggroup SET name='"+ name +"' WHERE groupID=" + groupID + ";";
 			int rs = stmt.executeUpdate(sql);
 			
 			return rs;
@@ -267,8 +250,8 @@ public class DBQueries
 		{
 			stmt = conn.createStatement(); 
 			sql = "INSERT INTO users (groupID, username, email, password)VALUES ('" 
-			+ getGroupID(groupName) + "," + username + "," + email + "," + email +"');";
-			stmt.executeUpdate(sql);
+			+ getGroupID(groupName) + "', '" + username + "', '" + email + "', '" + email +"');"; 
+			stmt.executeUpdate(sql);  
 			
 			int id = getUserID(groupName, username);
 			
@@ -292,7 +275,7 @@ public class DBQueries
 		try 
 		{
 			stmt = conn.createStatement(); 
-			sql = "SELECT groupID FROM msggroup WHERE groupID = '"
+			sql = "SELECT userID FROM users WHERE groupID = '"
 					+ getGroupID(groupName) +"' AND username='" + username + "';";
 			ResultSet rs = stmt.executeQuery(sql);
 			
@@ -365,7 +348,6 @@ public class DBQueries
 	 * @param groupID The ID of the group to get list of users from
 	 * @returns ArrayList of all the users in the group. Returns null if no users were found. 
 	 */
-	@SuppressWarnings("null")
 	public static ArrayList<User> getUsers(int groupID) 
 	{
 		try 
@@ -375,7 +357,7 @@ public class DBQueries
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			// Extract data from result set
-			ArrayList<User> user = null;
+			ArrayList<User> user = new ArrayList<User>();
 			String username = null; 
 			String email = null;
 			int userID = 0;
@@ -411,7 +393,7 @@ public class DBQueries
 		try 
 		{
 			stmt = conn.createStatement(); 
-			sql = "SELECT userID FROM users WHERE groupID='" + groupID + "' AND username='"+ username +"';";
+			sql = "SELECT * FROM users WHERE groupID='" + groupID + "' AND username='"+ username +"';";
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			// Extract data from result set
@@ -476,6 +458,7 @@ public class DBQueries
 	 * 
 	 * @param email Email of the user. 
 	 * @param pass Password of the account. 
+	 * @returns User object. Null if authentication failed. 
 	 */
 	public static User authentUser(String email, String pass) 
 	{
@@ -511,7 +494,7 @@ public class DBQueries
 	/**
 	 * Adding a message to the DB to be sent out to recipients.
 	 * 
-	 * @param groupID != null.
+	 * @param recipient != null.
 	 * @param msg can be null.
 	 * @param image can be null.
 	 * @param audio can be null.
@@ -526,7 +509,7 @@ public class DBQueries
 			
 			stmt = conn.createStatement(); 
 			sql = "INSERT INTO messages (groupID, msg, imageLoc, audioLoc) "
-					+ "VALUES ('" + groupID + ", " + msg + ", " + image + ", " + audio + "');";
+					+ "VALUES ('" + groupID + "', '" + msg + "', '" + image + "', '" + audio + "');";
 			stmt.executeUpdate(sql);
 			
 			//get the id of the new msg created, and add it to messages_users.
@@ -546,7 +529,7 @@ public class DBQueries
 			// add to n:m relationship table. 
 			stmt = conn.createStatement(); 
 			sql = "INSERT INTO messages_users (Messages_msgID, user_userID) "
-					+ "VALUES ('"+ msgID +", "+ recipID +"');";
+					+ "VALUES ('"+ msgID +"', '"+ recipID +"');";
 			stmt.executeUpdate(sql);
 			
 			return 1;
@@ -564,22 +547,20 @@ public class DBQueries
 	 * @param userID The ID of the user you want messages for.
 	 * @return List of all the Msg's that were found. Returns null if none were found. 
 	 */
-	@SuppressWarnings("null")
 	public static ArrayList<Message> getMsg(int userID) 
 	{
 		try 
 		{
 			stmt = conn.createStatement(); 
-			sql = "SELECT * FROM messages WHERE msgID = ("
-					+ "SELECT Messages_msgID FROM messages_users WHERE "
-					+ "user_userID='" + userID + "');";
+			sql = "SELECT messages.msg, messages.imageLoc, messages.audioLoc FROM messages LEFT JOIN messages_users "
+					+ "ON messages.msgID = messages_users.Messages_msgID WHERE messages_users.user_userID = '"+userID+"';";
 			ResultSet rs = stmt.executeQuery(sql);
 			
 			// Extract data from result set
-			ArrayList<Message> msg = null;
+			ArrayList<Message> msg = new ArrayList<Message>();
 			String strMsg = null; 
-			String imgLoc = null;
-			String audLoc = null;
+			String imgLoc = null; 
+			String audLoc = null; 
 			
 			while(rs.next())
 			{
@@ -602,6 +583,8 @@ public class DBQueries
 	
 	/**
 	 * Delete messages for a specific user. 
+	 * <p>
+	 * So far, this only deletes messages from the Messages_Users table. 
 	 * 
 	 * @param userID The ID of the user to delete messages for. 
 	 * @return Exit status. 1 if successful, -1 if error.
@@ -610,27 +593,28 @@ public class DBQueries
 	{
 		// first, delete from n:m relationship messages_users table
 		
-		// then delete from messages table
+		// TODO: then delete from messages table
 		
 		try 
 		{
 			stmt = conn.createStatement(); 
 			
-			sql = "SELECT msgID FROM messages_users WHERE userID='"+ userID +"';";
+			sql = "SELECT Messages_msgID FROM messages_users WHERE user_userID='"+ userID +"';";
 			ResultSet rs = stmt.executeQuery(sql);
 			int msgID = 0;
 			
 			while(rs.next())
 			{
-				msgID = rs.getInt("msgID");
+				msgID = rs.getInt("Messages_msgID");
 			}
 			rs.close();
 			
 			stmt = conn.createStatement(); 
 			sql = "DELETE FROM messages_users WHERE user_userID ='" +userID+ "' "
-					+ "AND msgID= '" + msgID + "';";
+					+ "AND Messages_msgID= '" + msgID + "';";
 			stmt.executeUpdate(sql);
 			
+			/*
 			stmt = conn.createStatement(); 
 			// Test if there are anymore recipients of that message. If not, then perminently delete it.
 			sql = "SELECT msgID FROM messages_users WHERE userID='"+ userID +"';";
@@ -642,6 +626,7 @@ public class DBQueries
 				sql = "DELETE FROM messages WHERE msgID ='" +msgID+ "';";
 				stmt.executeUpdate(sql);
 			}
+			*/
 			
 			return 1;
 		} 
@@ -675,5 +660,32 @@ public class DBQueries
 	public static void delPoll() {}
 	
 	public static void getPolls() {} 
+	
+	
+	/*
+	private static void test()
+	{
+		// Group & users finished
+		
+		int groupID = 1;
+		int userID1 = 1;
+		int userID2 = 2; 
+		
+		User user1 = getUser(groupID, "Sarah");
+		User user2 = getUser(groupID, "Jake");
+		
+		int r = addMsg(user1, "This is a message.", "", "");
+		int rs = addMsg(user2, "This is another message.","","");
+		
+		System.out.println("Message 1 return: " + r);
+		System.out.println("Message 2 return: " + rs);
+		
+		ArrayList<Message> msgs = new ArrayList<Message>();
+		msgs = getMsg(userID2);
+		
+		delMsg(userID1);
+		
+	}
+	*/
 	
 }

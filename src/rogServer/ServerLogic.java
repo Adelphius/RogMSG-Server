@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class ServerLogic 
 {	
-	
+	//TODO: each of these should call connect() and disconnect() from DBQueries 
 	/**
 	 * Authentication process to have a user log into their client application. 
 	 * <p>
